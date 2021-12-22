@@ -13,7 +13,7 @@ let avioes = [];
 let roteiros = [];
 
 function menu() {
-  console.log('-------MENU-------');
+  console.log('-----------------MENU---------------');
   console.log('1. Cadastrar novo roteiro ');
   console.log('2. Listar Roteiros ');
   console.log('3. Comprar nova passagem ');
@@ -21,6 +21,7 @@ function menu() {
   console.log('5. Cadastrar avião');
   console.log('6. Listar aviões da companhia ');
   console.log('7. Passageiros por avião ');
+  console.log('0. DIGITE 0 PARA SAIR ');
 }
 
 /*----------------ControllerAvião----------------------------------------*/
@@ -36,15 +37,15 @@ function cadastrar_aviao() {
 
 function buscar_aviao(codigo_aviao) {
   let aviao = avioes.filter((aviao) => aviao.codigo === Number(codigo_aviao));
-  return aviao;
+  return aviao[0];
 }
 
 function listar_avioes() {
   console.log('===========AVIÕES============');
   avioes.map((aviao) => {
-    let qtd_poltronas = aviao.poltronas_disponiveis();
+    let qtd_poltronas = aviao.qtd_poltronas_disponiveis();
     console.log(
-      `Código: ${aviao.codigo} -- Poltronas disponiveis ${qtd_poltronas}`
+      `Código: ${aviao.codigo} -- Qtd. Poltronas disponiveis ${qtd_poltronas}`
     );
   });
 }
@@ -104,14 +105,21 @@ function comprar_passagem() {
   let lista_roteiros = buscar_roteiro(roteiro);
 
   if (lista_roteiros.length !== 0) {
+    let codigo_roteiro = lista_roteiros[0].codigo;
+    let codigo_aviao = lista_roteiros[0].aviao;
+    let aviao = buscar_aviao(codigo_aviao);
+
+    console.log('==========Poltronas disponíveis==========');
+    aviao.poltronas_disponiveis();
     let numero_poltrona = readline.question(
       'Digite o número da poltrona desejada: '
     );
+    aviao.ocupar_poltronas(numero_poltrona);
     let cliente = new Cliente(
       codigo_cliente,
       nome,
-      lista_roteiros[0].codigo,
-      lista_roteiros[0].aviao,
+      codigo_roteiro,
+      codigo_aviao,
       numero_poltrona
     );
     codigo_cliente++;
@@ -143,8 +151,9 @@ function buscar_passageiros_por_viagem(codigo_roteiro) {
 
 function buscar_passageiros_por_aviao(codigo_aviao) {
   let lista_passageiros = viagens.filter(
-    (roteiro) => roteiro.aviao === Number(codigo_aviao)
+    (roteiro) => roteiro.aviao === codigo_aviao
   );
+  console.log(' AQUI ', lista_passageiros);
   lista_passageiros.map((passageiro) => {
     console.clear();
     console.log('=========Informações do Cliente=========');
